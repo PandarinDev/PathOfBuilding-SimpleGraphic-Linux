@@ -23,39 +23,46 @@ public:
     }
 
     int Apply(sys_vidSet_s* set) override {
+		// TODO: Apply properties from the received set
         return 0;
 	}
 
 	void SetActive(bool active) override {
-
+		// TODO: Probably not relevant on Linux, but double check
 	}
 		
 	void SetForeground() override {
-
+		glfwFocusWindow(window_handle);
 	}
  
 	bool IsActive() override {
-        return false;
+		// TODO: It's probably alright to always return true here, but double check
+        return true;
 	}
  
 	void SizeChanged(int width, int height, bool max) override {
-
+		glfwSetWindowSize(window_handle, width, height);
+		if (max) {
+			glfwMaximizeWindow(window_handle);
+		}
 	}
  
 	void PosChanged(int x, int y) override {
-
+		glfwSetWindowPos(window_handle, x, y);
 	}
  
-	void GetMinSize(int &width, int &height) override {
-
+	void GetMinSize(int& width, int& height) override {
+		// TODO: This should probably be properly calculated instead
+		width = 200;
+		height = 200;
 	}
  
 	void SetVisible(bool vis) override {
-
+		glfwSetWindowAttrib(window_handle, GLFW_VISIBLE, vis ? GLFW_TRUE : GLFW_FALSE);
 	}
 		
 	bool IsVisible() override {
-        return false;
+        return glfwGetWindowAttrib(window_handle, GLFW_VISIBLE);
 	}
  
 	void SetTitle(const char* title) override {
@@ -66,7 +73,7 @@ public:
         return window_handle;
 	}
 			
-	void GetRelativeCursor(int &x, int &y) override {
+	void GetRelativeCursor(int& x, int& y) override {
         double x_local, y_local;
         glfwGetCursorPos(window_handle, &x_local, &y_local);
         x = x_local;
@@ -78,7 +85,7 @@ public:
 	}
 
 	bool IsCursorOverWindow() override {
-        return false;
+		return glfwGetWindowAttrib(window_handle, GLFW_HOVERED);
 	}
 
 private:
@@ -88,12 +95,10 @@ private:
 
 };
 
-sys_IVideo* sys_IVideo::GetHandle(sys_IMain* sysHnd)
-{
+sys_IVideo* sys_IVideo::GetHandle(sys_IMain* sysHnd) {
 	return new sys_video_linux(sysHnd);
 }
 
-void sys_IVideo::FreeHandle(sys_IVideo* hnd)
-{
+void sys_IVideo::FreeHandle(sys_IVideo* hnd) {
 	delete (sys_video_linux*)hnd;
 }
