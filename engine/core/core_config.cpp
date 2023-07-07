@@ -154,9 +154,9 @@ bool core_config_c::LoadConfig(const char* cfgName)
 {
 	// Make sure it has .cfg extension
 	char fileName[260];
-	strcpy_s(fileName, 260, cfgName);
+	CopyString(fileName, 260, cfgName);
 	if (strchr(fileName, '.') == NULL) {
-		strcat_s(fileName, 260, ".cfg");
+		ConcatStringBounded(fileName, 260, ".cfg");
 	}
 
 	sys->con->Printf("Executing %s\n", fileName);
@@ -201,9 +201,9 @@ bool core_config_c::SaveConfig(const char* cfgName)
 {
 	// Make sure it has .cfg extension
 	char fileName[260];
-	strcpy_s(fileName, 260, cfgName);
+	CopyString(fileName, 260, cfgName);
 	if (strchr(fileName, '.') == NULL) {
-		strcat_s(fileName, 260, ".cfg");
+		ConcatStringBounded(fileName, 260, ".cfg");
 	}
 
 	sys->con->Printf("Saving %s\n", fileName);

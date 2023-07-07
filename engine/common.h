@@ -10,15 +10,23 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+
+#ifdef _WIN32
 #include <process.h>
 #include <direct.h>
-#include <math.h>
 #include <io.h>
+#endif
+
+#include <math.h>
 #include <errno.h>
 #include <stdbool.h>
 
 #ifdef _DEBUG
 #include "common/memtrak3.h"
+#endif
+
+#ifndef _WIN32
+#include <sys/stat.h>
 #endif
 
 // =======
@@ -89,6 +97,19 @@ private:
 // =========
 
 #define M_PI 3.14159265358979323846f
+
+#ifndef _WIN32
+	#define __stdcall
+	#define __min(a,b) (((a) < (b)) ? (a) : (b))
+	#define __max(a,b) (((a) > (b)) ? (a) : (b))
+	#define strtok_s(str, delimiters, context) (strtok(str, delimiters))
+	#define _strnicmp(s1, s2, n) (strncasecmp(s1, s2, n))
+	#define vsnprintf_s(buffer, sizeOfBuffer, format, argptr) (vsnprintf(buffer, sizeOfBuffer, format, argptr))
+	#define localtime_s(timer, buf) localtime_r(buf, timer)
+	#define _mkdir(dir) (mkdir(dir, 0700))
+	#define sscanf_s(buffer, format, ...) (sscanf(buffer, format, __VA_ARGS__))
+
+#endif
 
 static const char axchr[] = {'X', 'Y', 'Z', 'W'};
 
@@ -477,6 +498,11 @@ char*	_AllocStringLen(size_t len, const char* file, int line);
 #define AllocStringLen(s) _AllocStringLen(s, __FILE__, __LINE__)
 void	FreeString(const char* str);
 dword	StringHash(const char* str, int mask);
+int		CopyString(char* dest, size_t destsz, const char* src);
+int		CopyStringBounded(char* dest, size_t destsz, const char* src, size_t count);
+int		ConcatStringBounded(char* dest, size_t destsz, const char* src);
+int		CaseInsensitiveStringCmp(const char* s1, const char* s2);
+int		PrintBounded(char* buffer, size_t buffer_size, const char* format, ...);
 
 // =======
 // Headers

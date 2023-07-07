@@ -91,7 +91,7 @@ textBuffer_c &textBuffer_c::operator=(const char* r)
 {
 	// Reallocate buffer and copy the string
 	Alloc((int)strlen(r));
-	strcpy_s(buf, len+1, r);
+	CopyString(buf, len+1, r);
 	return *this;
 }
 
@@ -99,7 +99,7 @@ void textBuffer_c::IncSize()
 {
 	len++;
 	char* tmp = new char[len+1];
-	strncpy_s(tmp, len+1, buf, len);
+	CopyStringBounded(tmp, len+1, buf, len);
 	tmp[len] = 0;
 	delete buf;
 	buf = tmp;	
@@ -109,7 +109,7 @@ void textBuffer_c::DecSize()
 {
 	len--;
 	char* tmp = new char[len+1];
-	strncpy_s(tmp, len+1, buf, len);
+	CopyStringBounded(tmp, len+1, buf, len);
 	tmp[len] = 0;
 	delete buf;
 	buf = tmp;
@@ -254,7 +254,7 @@ char* _AllocString(const char* str, const char* file, int line)
 
 	size_t aslen = strlen(str) + 1;
 	char* al = new(file, line) char[aslen];
-	strcpy_s(al, aslen, str);
+	CopyString(al, aslen, str);
 	return al;
 }
 
@@ -279,3 +279,51 @@ dword StringHash(const char* str, int mask)
 	}
 	return hash & mask;
 }
+
+int CopyString(char* dest, size_t destsz, const char* src) {
+	#ifdef _WIN32
+		return strcpy_s(dest, destsz, src);
+	#else
+		strcpy(dest, src);
+		return 0;
+	#endif
+}
+
+int CopyStringBounded(char* dest, size_t destsz, const char* src, size_t count) {
+	#ifdef _WIN32
+		return strncpy_s(dest, destsz, src, count);
+	#else
+		strncpy(dest, src, count);
+		return 0;
+	#endif
+}
+
+int ConcatStringBounded(char* dest, size_t destsz, const char* src) {
+	#ifdef _WIN32
+		return strcat_s(dest, destsz, src);
+	#else
+		strcat(dest, src);
+		return 0;
+	#endif
+}
+
+int CaseInsensitiveStringCmp(const char* s1, const char* s2) {
+	#ifdef _WIN32
+		return _stricmp(s1, s2);
+	#else
+		return strcasecmp(s1, s2);
+	#endif
+}
+
+int PrintBounded(char* buffer, size_t buffer_size, const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	#ifdef _WIN32
+		int result = vsprintf_s(buffer, buffer_size, format, in);
+	#else
+		int result = vsprintf(buffer, format, args);
+	#endif
+	va_end(args);
+	return result;
+}
+

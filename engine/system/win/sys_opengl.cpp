@@ -5,6 +5,8 @@
 // Platform: Windows
 //
 
+#ifdef _WIN32
+
 #include "sys_local.h"
 
 #include <GL/gl.h>
@@ -178,3 +180,5 @@ bool sys_openGL_c::ReleaseSecondary()
 {
 	return !wglMakeCurrent(NULL, NULL);
 }
+
+#endif

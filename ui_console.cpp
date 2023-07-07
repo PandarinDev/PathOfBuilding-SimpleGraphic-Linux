@@ -190,10 +190,10 @@ void ui_console_c::Render()
 		if (escLen) {
 			c+= escLen - 1;
 		} else {
-			strcat_s(caretStr, 512, " ");
+			ConcatStringBounded(caretStr, 512, " ");
 		}	
 	}
-	strcat_s(caretStr, 512, "_");
+	ConcatStringBounded(caretStr, 512, "_");
 
 	// Draw prompt, input text, and caret
 	renderer->DrawString(0, basey, F_LEFT, fontSize, colorWhite, F_FIXED, "]");
@@ -203,6 +203,6 @@ void ui_console_c::Render()
 
 void ui_console_c::SetConInput(char* newInput, int newCaret)
 {
-	strcpy_s(input, 1024, newInput);
+	CopyString(input, 1024, newInput);
 	caret = newCaret;
 }

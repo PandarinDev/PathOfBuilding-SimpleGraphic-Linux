@@ -43,11 +43,11 @@ r_font_c::r_font_c(r_renderer_c* renderer, const char* fontName)
 	fontHeightMap = NULL;
 
 	char fileNameBase[260];
-	sprintf_s(fileNameBase, 260, CFG_DATAPATH "fonts/%s", fontName);
+	PrintBounded(fileNameBase, 260, CFG_DATAPATH "fonts/%s", fontName);
 
 	// Open info file
 	char tgfName[260];
-	sprintf_s(tgfName, 260, "%s.tgf", fileNameBase);
+	PrintBounded(tgfName, 260, "%s.tgf", fileNameBase);
 	std::ifstream tgf(tgfName);
 	if (!tgf) {
 		renderer->sys->con->Warning("font \"%s\" not found", fontName);
@@ -66,7 +66,7 @@ r_font_c::r_font_c(r_renderer_c* renderer, const char* fontName)
 			fh = new f_fontHeight_s;
 			fontHeights[numFontHeight++] = fh;
 			char tgaName[260];
-			sprintf_s(tgaName, 260, "%s.%d.tga", fileNameBase, h);
+			PrintBounded(tgaName, 260, "%s.%d.tga", fileNameBase, h);
 			fh->tex = new r_tex_c(renderer->texMan, tgaName, TF_NOMIPMAP);
 			fh->height = h;
 			if (h > maxHeight) {

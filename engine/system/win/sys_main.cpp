@@ -5,6 +5,8 @@
 // Platform: Windows
 //
 
+#ifdef _WIN32
+
 #include "sys_local.h"
 
 #include "core.h"
@@ -66,15 +68,15 @@ unsigned long __stdcall thread_c::statThreadProc(void* obj)
 		DWORD code =  exRec->ExceptionCode;
 		char detail[512];
 		if (code == EXCEPTION_ACCESS_VIOLATION && exRec->NumberParameters == 2) {
-			sprintf_s(detail, 512, "Access violation: attempted to %s address %08Xh", 
+			PrintBounded(detail, 512, "Access violation: attempted to %s address %08Xh", 
 				exRec->ExceptionInformation[0]? "write to":"read from", static_cast<int>(exRec->ExceptionInformation[1]));
 		} else if (code == EXCEPTION_STACK_OVERFLOW) {
-			strcpy_s(detail, 512, "Stack overflow");
+			CopyString(detail, 512, "Stack overflow");
 		} else {
-			sprintf_s(detail, 512, "Error code: %08Xh", code);
+			PrintBounded(detail, 512, "Error code: %08Xh", code);
 		}
 		char err[1024];
-		sprintf_s(err, 1024, "Critical error at address %08Xh in thread %d:\n%s", static_cast<int>((ULONG_PTR)exRec->ExceptionAddress), GetCurrentThreadId(), detail);
+		PrintBounded(err, 1024, "Critical error at address %08Xh in thread %d:\n%s", static_cast<int>((ULONG_PTR)exRec->ExceptionAddress), GetCurrentThreadId(), detail);
 		thread->_sysMain->threadError = AllocString(err);
 	}
 	return 0;
@@ -794,12 +796,12 @@ bool sys_main_c::Run(int argc, char** argv)
 		DWORD code =  exRec->ExceptionCode;
 		char detail[512];
 		if (code == EXCEPTION_ACCESS_VIOLATION && exRec->NumberParameters == 2) {
-			sprintf_s(detail, 512, "Access violation: attempted to %s address %08Xh", 
+			PrintBounded(detail, 512, "Access violation: attempted to %s address %08Xh", 
 				exRec->ExceptionInformation[0]? "write to":"read from", static_cast<int>(exRec->ExceptionInformation[1]));
 		} else if (code == EXCEPTION_STACK_OVERFLOW) {
-			strcpy_s(detail, 512, "Stack overflow");
+			CopyString(detail, 512, "Stack overflow");
 		} else {
-			sprintf_s(detail, 512, "Error code: %08Xh", code);
+			PrintBounded(detail, 512, "Error code: %08Xh", code);
 		}
 		Error("Critical error at address %08Xh:\n%s", static_cast<int>((ULONG_PTR)exRec->ExceptionAddress), detail);
 	}
@@ -829,3 +831,5 @@ bool sys_main_c::Run(int argc, char** argv)
 
 	return restartFlag;
 }
+
+#endif

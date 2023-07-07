@@ -369,7 +369,7 @@ void r_tex_c::ForceLoad()
 
 void r_tex_c::LoadFile()
 {
-	if (_stricmp(fileName.c_str(), "@white") == 0) {
+	if (CaseInsensitiveStringCmp(fileName.c_str(), "@white") == 0) {
 		// Upload an 8x8 white image
 		image_c raw;
 		raw.CopyRaw(IMGTYPE_GRAY, 8, 8, t_whiteImage);

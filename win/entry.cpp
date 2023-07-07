@@ -53,7 +53,7 @@
 extern "C" __declspec(dllexport) int RunLuaFileAsWin(int argc, char** argv)
 {
 #ifdef _MEMTRAK_H
-	strcpy_s(_memTrak_reportName, 512, "SimpleGraphic/memtrak.log");
+	CopyString(_memTrak_reportName, 512, "SimpleGraphic/memtrak.log");
 #endif
 
 	timeBeginPeriod(1);

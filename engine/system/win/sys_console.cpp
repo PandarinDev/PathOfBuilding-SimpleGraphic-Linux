@@ -5,6 +5,8 @@
 // Platform: Windows
 //
 
+#ifdef _WIN32
+
 #include "sys_local.h"
 
 // =============
@@ -317,3 +319,5 @@ void sys_console_c::ConPrintClear()
 {
 	Edit_SetText(hwOut, "");
 }
+
+#endif

@@ -573,7 +573,7 @@ int ui_main_c::KeyForName(const char* keyName)
 	if (keyName[1]) {
 		// > 1 character in length, do a lookup
 		for (int i = 0; ui_keyNameMap[i].key; i++) {
-			if ( !_stricmp(keyName, ui_keyNameMap[i].str) ) {
+			if ( !CaseInsensitiveStringCmp(keyName, ui_keyNameMap[i].str) ) {
 				return ui_keyNameMap[i].key;
 			}
 		}

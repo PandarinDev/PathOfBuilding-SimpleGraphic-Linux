@@ -509,7 +509,7 @@ r_shaderHnd_c* r_renderer_c::RegisterShader(const char* shname, int flags)
 	for (int s = 0; s < numShader; s++) {
 		if ( !shaderList[s] ) {
 			newId = s;
-		} else if (shaderList[s]->nameHash == nameHash && _stricmp(shname, shaderList[s]->name) == 0 && (shaderList[s]->tex->flags & ~TF_ASYNC) == (flags & ~TF_ASYNC)) {
+		} else if (shaderList[s]->nameHash == nameHash && CaseInsensitiveStringCmp(shname, shaderList[s]->name) == 0 && (shaderList[s]->tex->flags & ~TF_ASYNC) == (flags & ~TF_ASYNC)) {
 			// Shader already exists, return a new handle for it
 			if (flags & TF_ASYNC) {
 				// Ensure texture will be loaded sometime
@@ -738,11 +738,11 @@ void r_renderer_c::C_Screenshot(IConsole* conHnd, args_c &args)
 {
 	const char* fmtName = args.argc >= 2? args.argv[1] : r_screenshotFormat->strVal;
 	takeScreenshot = R_SSNONE;
-	if ( !_stricmp(fmtName, "tga") ) {
+	if ( !CaseInsensitiveStringCmp(fmtName, "tga") ) {
 		takeScreenshot = R_SSTGA;
-	} else if ( !_stricmp(fmtName, "jpg") || !_stricmp(fmtName, "jpeg") ) {
+	} else if ( !CaseInsensitiveStringCmp(fmtName, "jpg") || !CaseInsensitiveStringCmp(fmtName, "jpeg") ) {
 		takeScreenshot = R_SSJPEG;
-	} else if ( !_stricmp(fmtName, "png") ) {
+	} else if ( !CaseInsensitiveStringCmp(fmtName, "png") ) {
 		takeScreenshot = R_SSPNG;
 	} else {
 		conHnd->Warning("Unknown screenshot format '%s', valid formats: jpg, tga, png", fmtName);
@@ -783,7 +783,7 @@ void r_renderer_c::DoScreenshot(image_c* i, const char* ext)
 	time(&curTime);
 	tm curTimeSt;
 	localtime_s(&curTimeSt, &curTime);
-	sprintf_s(ssname, 260, CFG_DATAPATH "Screenshots/%02d%02d%02d_%02d%02d%02d.%s", 
+	PrintBounded(ssname, 260, CFG_DATAPATH "Screenshots/%02d%02d%02d_%02d%02d%02d.%s", 
 		curTimeSt.tm_mon+1, curTimeSt.tm_mday, curTimeSt.tm_year%100,
 		curTimeSt.tm_hour, curTimeSt.tm_min, curTimeSt.tm_sec, ext);
 

@@ -79,7 +79,7 @@ _memTrak_c::_memTrak_c()
 	freedOut = 0;
 	memSize = 0;
 	_memTrak_suppressReport = false;
-	strcpy_s(_memTrak_reportName, 512, "_memtrak.log");
+	CopyString(_memTrak_reportName, 512, "_memtrak.log");
 }
 
 _memTrak_c::~_memTrak_c()
@@ -124,7 +124,7 @@ _memTrak_c::~_memTrak_c()
 
 	if (lknum) {
 		char msg[256];
-		sprintf_s(msg, 256, "%d memory leaks have been detected.\r\nTotal size: %d bytes", lknum, lksize);
+		PrintBounded(msg, 256, "%d memory leaks have been detected.\r\nTotal size: %d bytes", lknum, lksize);
 		MessageBox(NULL, msg, "MemTrak3", MB_ICONERROR|MB_SYSTEMMODAL);
 		char wd[260];
 		GetCurrentDirectory(260, wd);

@@ -4,6 +4,11 @@
 // System Main Header
 //
 
+#ifndef _WIN32
+	#define __stdcall
+	#define dword unsigned int
+#endif
+
 // =======
 // Classes
 // =======

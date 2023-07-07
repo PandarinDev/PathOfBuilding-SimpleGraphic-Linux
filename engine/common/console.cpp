@@ -43,14 +43,18 @@ conVar_c::~conVar_c()
 void conVar_c::Set(int in)
 {
 	char tmp[16];
-	_itoa_s(in, tmp, 16, 10);
+	#ifdef _WIN32
+		_itoa_s(in, tmp, 16, 10);
+	#else
+		snprintf(tmp, 16, "%d", in);
+	#endif
 	Set(tmp);
 }
 
 void conVar_c::Set(float in)
 {
 	char tmp[64];
-	sprintf_s(tmp, 64, "%f", in);
+	PrintBounded(tmp, 64, "%f", in);
 	Set(tmp);
 }
 
@@ -79,7 +83,7 @@ void conVar_c::Toggle()
 int conVar_c::Get(char* out, int outSz)
 {
 	if (out) {
-		strncpy_s(out, outSz, strVal, outSz-1);
+		CopyStringBounded(out, outSz, strVal, outSz-1);
 	}
 
 	return intVal;
@@ -349,7 +353,7 @@ void console_c::PrintFunc(const char* func)
 {
 	// Print function title
 	char text[256];
-	sprintf_s(text, 256, "\n--- %s ---\n", func);
+	PrintBounded(text, 256, "\n--- %s ---\n", func);
 	Print(text);
 }
 
@@ -359,7 +363,7 @@ void console_c::Warning(const char* fmt, ...)
 	va_list va;
 	va_start(va, fmt);
 	char text[4096]; 
-	vsprintf_s(text, 4096, fmt, va);
+	PrintBounded(text, 4096, fmt, va);
 	va_end(va);
 	Printf("^4Warning: %s\n", text);
 }
@@ -535,7 +539,7 @@ void conCmdHandler_c::Cmd_PrivAdd(const char* name, int minArgs, const char* usa
 conCmd_c* console_c::Cmd_Ptr(const char* name)
 {
 	for (int slot = 0; slot < CON_MAXCMD; slot++) {
-		if (cmdList[slot] && _stricmp(cmdList[slot]->name, name) == 0) {
+		if (cmdList[slot] && CaseInsensitiveStringCmp(cmdList[slot]->name, name) == 0) {
 			return cmdList[slot];
 		}
 	}
@@ -623,7 +627,7 @@ int console_c::Cvar_Find(const char* name)
 {
 	// Find the cvar and return the index
 	for (int slot = 0; slot < CON_MAXCVAR; slot++) {
-		if (cvarList[slot] && _stricmp(name, cvarList[slot]->name) == 0) {
+		if (cvarList[slot] && CaseInsensitiveStringCmp(name, cvarList[slot]->name) == 0) {
 			return slot;
 		}
 	}
@@ -783,7 +787,7 @@ void conInputHandler_c::ConInputKeyEvent(int key, int type)
 		case KEY_TAB:
 			if (_con->input.len) {
 				char comp[1024];
-				strcpy_s(comp, 1024, _con->input.buf);
+				CopyString(comp, 1024, _con->input.buf);
 				int	compLen = (int)strlen(comp);
 
 				// Build match list
@@ -794,7 +798,7 @@ void conInputHandler_c::ConInputKeyEvent(int key, int type)
 					conCmd_c* cmd = _con->cmdList[slot];
 					if (cmd && _strnicmp(cmd->name, comp, compLen) == 0) {
 						match[num] = cmd->name;
-						strcpy_s(args[num], 256, cmd->usage);
+						CopyString(args[num], 256, cmd->usage);
 						num++;
 					}
 				}
@@ -802,7 +806,7 @@ void conInputHandler_c::ConInputKeyEvent(int key, int type)
 					conVar_c* cv = _con->cvarList[slot];
 					if (cv && _strnicmp(cv->name, comp, compLen) == 0) {
 						match[num] = cv->name;
-						sprintf_s(args[num], 256, "= \"%s\"", cv->strVal);
+						PrintBounded(args[num], 256, "= \"%s\"", cv->strVal);
 						num++;
 					}
 				}
@@ -811,9 +815,9 @@ void conInputHandler_c::ConInputKeyEvent(int key, int type)
 					// Matches were found
 					if (num == 1) {
 						// Exact match
-						strcpy_s(comp, 1024, match[0]);
+						CopyString(comp, 1024, match[0]);
 						if (*args[0]) {
-							strcat_s(comp, 1024, " ");
+							ConcatStringBounded(comp, 1024, " ");
 						}
 					} else {
 						// Multiple matches, print them out
@@ -854,7 +858,7 @@ void conInputHandler_c::ConInputKeyEvent(int key, int type)
 				_con->Execute(_con->input.buf);
 
 				// Add to command history if different from most recent command
-				if (_stricmp(_con->hist[0].buf, _con->input.buf)) {
+				if (CaseInsensitiveStringCmp(_con->hist[0].buf, _con->input.buf)) {
 					if (_con->numHist + 1 < CON_MAXHIST) {
 						_con->numHist++;
 					}
